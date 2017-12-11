@@ -8,30 +8,33 @@ import sys
 secs_to_hours = np.float(1.0e+0)/np.float(3600e+0)
 zero = np.longdouble(0.0e+0)
 
-data_dir = "./Data"
+#data_dir = "./Data"
+data_dir = "/var/spool/torque/server_priv/accounting/"
 
 file_list = os.listdir(data_dir)
 num_files = len(file_list)
 print ("Found %d files in the following directory: %s") % (num_files,data_dir)
 
 # Set up some important dates
-# 2013
-start_2013_str = '2013.01.01 00:00:00'
-end_2013_str   = '2013.12.31 23:59:59'
-start_2013 = int(time.mktime(time.strptime(start_2013_str,'%Y.%m.%d %H:%M:%S')))
-end_2013   = int(time.mktime(time.strptime(end_2013_str,'%Y.%m.%d %H:%M:%S')))
-
-# 2014
-start_2014_str = '2014.01.01 00:00:00'
-end_2014_str   = '2014.12.31 23:59:59'
-start_2014 = int(time.mktime(time.strptime(start_2014_str,'%Y.%m.%d %H:%M:%S')))
-end_2014   = int(time.mktime(time.strptime(end_2014_str,'%Y.%m.%d %H:%M:%S')))
 
 # 2015
-start_2015_str = '2015.01.01 00:00:00'
-end_2015_str   = '2015.12.31 23:59:59'
+start_2015_str = '2015.02.01 00:00:00'
+end_2015_str   = '2016.01.31 23:59:59'
 start_2015 = int(time.mktime(time.strptime(start_2015_str,'%Y.%m.%d %H:%M:%S')))
 end_2015   = int(time.mktime(time.strptime(end_2015_str,'%Y.%m.%d %H:%M:%S')))
+
+# 2016
+start_2016_str = '2016.02.01 00:00:00'
+end_2016_str   = '2017.01.31 23:59:59'
+start_2016 = int(time.mktime(time.strptime(start_2016_str,'%Y.%m.%d %H:%M:%S')))
+end_2016   = int(time.mktime(time.strptime(end_2016_str,'%Y.%m.%d %H:%M:%S')))
+
+# 2017
+start_2017_str = '2017.02.01 00:00:00'
+end_2017_str   = '2018.01.31 23:59:59'
+start_2017 = int(time.mktime(time.strptime(start_2017_str,'%Y.%m.%d %H:%M:%S')))
+end_2017   = int(time.mktime(time.strptime(end_2017_str,'%Y.%m.%d %H:%M:%S')))
+
 
 start_time = int(time.mktime(time.localtime()))
 
@@ -400,14 +403,14 @@ stats60 = SummaryStats("all","past 60 days",start_time - sixty_days_in_secs,star
 ninety_days_in_secs = 60*60*24*90
 stats90 = SummaryStats("all","past 90 days",start_time - ninety_days_in_secs,start_time)
 
+# For all of 2017
+stats2017 = SummaryStats("all","2017",start_2017,end_2017)
+
+# For all of 2016
+stats2016 = SummaryStats("all","2016",start_2016,end_2016)
+
 # For all of 2015
 stats2015 = SummaryStats("all","2015",start_2015,end_2015)
-
-# For all of 2014
-stats2014 = SummaryStats("all","2014",start_2014,end_2014)
-
-# For all of 2013
-stats2013 = SummaryStats("all","2013",start_2013,end_2013)
 
 
 stats_list = list()
@@ -427,21 +430,21 @@ for j in JobList:
         stats60.update(j)
         # 90-day stats
         stats90.update(j)
+        # 2017 stats
+        stats2017.update(j)
+        # 2016 stats
+        stats2016.update(j)
         # 2015 stats
         stats2015.update(j)
-        # 2014 stats
-        stats2014.update(j)
-        # 2013 stats
-        stats2013.update(j)
     else:
         JobList.remove(j)
 
 stats_list.append(stats30)
 stats_list.append(stats60)
 stats_list.append(stats90)
+stats_list.append(stats2017)
+stats_list.append(stats2016)
 stats_list.append(stats2015)
-stats_list.append(stats2014)
-stats_list.append(stats2013)
 
 
 print ("********************************************************************************")
@@ -468,23 +471,23 @@ for user in user_list:
     user_stats90 = SummaryStats(user,"Past 90 days",\
                            start_time - ninety_days_in_secs,\
                            start_time)
+    user_stats2017 = SummaryStats(user,"2017",start_2017,end_2017)
+    user_stats2016 = SummaryStats(user,"2016",start_2016,end_2016)
     user_stats2015 = SummaryStats(user,"2015",start_2015,end_2015)
-    user_stats2014 = SummaryStats(user,"2014",start_2014,end_2014)
-    user_stats2013 = SummaryStats(user,"2013",start_2013,end_2013)
     for job in JobList:
         if job.user == user:
             user_stats30.update(job)
             user_stats60.update(job)
             user_stats90.update(job)
+            user_stats2017.update(job)
+            user_stats2016.update(job)
             user_stats2015.update(job)
-            user_stats2014.update(job)
-            user_stats2013.update(job)
     user_data.append(user_stats30)
     user_data.append(user_stats60)
     user_data.append(user_stats90)
+    user_data.append(user_stats2017)
+    user_data.append(user_stats2016)
     user_data.append(user_stats2015)
-    user_data.append(user_stats2014)
-    user_data.append(user_stats2013)
 
     CombinedSummaryTable(user_data,"User",False,False,True)
 
@@ -503,23 +506,23 @@ for group in group_list:
     group_stats90 = SummaryStats(group,"Past 90 days",\
                            start_time - ninety_days_in_secs,\
                            start_time)
+    group_stats2017 = SummaryStats(group,"2017",start_2017,end_2017)
+    group_stats2016 = SummaryStats(group,"2016",start_2016,end_2016)
     group_stats2015 = SummaryStats(group,"2015",start_2015,end_2015)
-    group_stats2014 = SummaryStats(group,"2014",start_2014,end_2014)
-    group_stats2013 = SummaryStats(group,"2013",start_2013,end_2013)
     for job in JobList:
         if job.group == group:
             group_stats30.update(job)
             group_stats60.update(job)
             group_stats90.update(job)
+            group_stats2017.update(job)
+            group_stats2016.update(job)
             group_stats2015.update(job)
-            group_stats2014.update(job)
-            group_stats2013.update(job)
     group_data.append(group_stats30)
     group_data.append(group_stats60)
     group_data.append(group_stats90)
+    group_data.append(group_stats2017)
+    group_data.append(group_stats2016)
     group_data.append(group_stats2015)
-    group_data.append(group_stats2014)
-    group_data.append(group_stats2013)
     CombinedSummaryTable(group_data,"Group",True,False,True)
 
 
@@ -538,24 +541,24 @@ for queue in queue_list:
     queue_stats90 = SummaryStats(queue,"Past 90 days",\
                            start_time - ninety_days_in_secs,\
                            start_time)
+    queue_stats2017 = SummaryStats(queue,"2017",start_2017,end_2017)
+    queue_stats2016 = SummaryStats(queue,"2016",start_2016,end_2016)
     queue_stats2015 = SummaryStats(queue,"2015",start_2015,end_2015)
-    queue_stats2014 = SummaryStats(queue,"2014",start_2014,end_2014)
-    queue_stats2013 = SummaryStats(queue,"2013",start_2013,end_2013)
 
     for job in JobList:
         if job.queue == queue:
             queue_stats30.update(job)
             queue_stats60.update(job)
             queue_stats90.update(job)
+            queue_stats2017.update(job)
+            queue_stats2016.update(job)
             queue_stats2015.update(job)
-            queue_stats2014.update(job)
-            queue_stats2013.update(job)
     queue_data.append(queue_stats30)
     queue_data.append(queue_stats60)
     queue_data.append(queue_stats90)
+    queue_data.append(queue_stats2017)
+    queue_data.append(queue_stats2016)
     queue_data.append(queue_stats2015)
-    queue_data.append(queue_stats2014)
-    queue_data.append(queue_stats2013)
 
     CombinedSummaryTable(queue_data,"Queue",True,True,False)
 
@@ -573,24 +576,24 @@ single_node_stats60 = SummaryStats("all","Past 60 days",\
 single_node_stats90 = SummaryStats("all","Past 90 days",\
                        start_time - ninety_days_in_secs,\
                        start_time)
+single_node_stats2017 = SummaryStats("all","2017",start_2017,end_2017)
+single_node_stats2016 = SummaryStats("all","2016",start_2016,end_2016)
 single_node_stats2015 = SummaryStats("all","2015",start_2015,end_2015)
-single_node_stats2014 = SummaryStats("all","2014",start_2014,end_2014)
-single_node_stats2013 = SummaryStats("all","2013",start_2013,end_2013)
 
 for job in JobList:
     if job.multinode == False:
         single_node_stats30.update(job)
         single_node_stats60.update(job)
         single_node_stats90.update(job)
+        single_node_stats2017.update(job)
+        single_node_stats2016.update(job)
         single_node_stats2015.update(job)
-        single_node_stats2014.update(job)
-        single_node_stats2013.update(job)
 single_node_data.append(single_node_stats30)
 single_node_data.append(single_node_stats60)
 single_node_data.append(single_node_stats90)
+single_node_data.append(single_node_stats2017)
+single_node_data.append(single_node_stats2016)
 single_node_data.append(single_node_stats2015)
-single_node_data.append(single_node_stats2014)
-single_node_data.append(single_node_stats2013)
 
 for i in single_node_data:
     i.print_info()
@@ -612,24 +615,25 @@ multi_node_stats60 = SummaryStats("all","Past 60 days",\
 multi_node_stats90 = SummaryStats("all","Past 90 days",\
                                   start_time - ninety_days_in_secs,\
                                   start_time)
+multi_node_stats2017 = SummaryStats("all","2017",start_2017,end_2017)
+multi_node_stats2016 = SummaryStats("all","2016",start_2016,end_2016)
 multi_node_stats2015 = SummaryStats("all","2015",start_2015,end_2015)
-multi_node_stats2014 = SummaryStats("all","2014",start_2014,end_2014)
-multi_node_stats2013 = SummaryStats("all","2013",start_2013,end_2013)
 
 for job in JobList:
     if job.multinode == True:
         multi_node_stats30.update(job)
         multi_node_stats60.update(job)
         multi_node_stats90.update(job)
+        multi_node_stats2017.update(job)
+        multi_node_stats2016.update(job)
         multi_node_stats2015.update(job)
-        multi_node_stats2014.update(job)
-        multi_node_stats2013.update(job)
 multi_node_data.append(multi_node_stats30)
 multi_node_data.append(multi_node_stats60)
 multi_node_data.append(multi_node_stats90)
+multi_node_data.append(multi_node_stats2017)
+multi_node_data.append(multi_node_stats2016)
 multi_node_data.append(multi_node_stats2015)
-multi_node_data.append(multi_node_stats2014)
-multi_node_data.append(multi_node_stats2013)
+
 
 for i in multi_node_data:
     i.print_info()
