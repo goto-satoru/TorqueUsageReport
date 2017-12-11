@@ -339,7 +339,7 @@ def CombinedSummaryTable (data_list,col_header="",\
             print ("%-15s          Average Times (h)            Cores per") % (col_header)
             print ("%-15s    Wait      Run      Turnaround         Job         Jobs") % (data.owner)
             print ("-------------------------------------------------------------------------")
-        print ("%-15s%8.2f%9.2f%13.2f%15.1f%13d") % (data.label,\
+        print ("\n%-15s%8.2f%9.2f%13.2f%15.1f%13d") % (data.label,\
                                                data.wait[2] * secs_to_hours,\
                                                data.run[2] * secs_to_hours,\
                                                data.turnaround[2] * secs_to_hours,\
